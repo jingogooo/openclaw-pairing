@@ -4,7 +4,7 @@ set -e
 # OpenClaw Pairing Plugin Installer
 # Supports: Android, HarmonyOS, iOS
 
-REPO="feiclaw/openclaw-pairing"
+REPO="jingogooo/openclaw-pairing"
 API_URL="https://api.github.com/repos/${REPO}/releases/latest"
 
 echo "========================================"
