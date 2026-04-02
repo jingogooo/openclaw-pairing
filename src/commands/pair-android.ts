@@ -26,7 +26,9 @@ export function registerPairAndroid(api: OpenClawPluginAPI) {
           console.log('\n✓ Pairing successful');
           console.log(`  Device: ${result.deviceId}`);
           console.log(`  Gateway: ${result.gatewayUrl}`);
-          console.log(`  Expires: ${new Date(result.expiresAtMs).toISOString()}`);
+          if (result.expiresAtMs) {
+            console.log(`  Expires: ${new Date(result.expiresAtMs).toISOString()}`);
+          }
         } else {
           console.error('\n✗ Pairing failed:', result.error);
           process.exit(1);
