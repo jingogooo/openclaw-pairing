@@ -9,8 +9,7 @@
     "watch": "tsc --watch",
     "test": "jest",
     "test:watch": "jest --watch",
-    "lint": "echo 'No lint configured'",
-    "prepare": "npm run build"
+    "lint": "echo 'No lint configured'"
   },
   "keywords": [
     "openclaw",
