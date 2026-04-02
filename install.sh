@@ -52,10 +52,11 @@ else
     TEMP_DIR=$(mktemp -d)
     cd "$TEMP_DIR"
 
-    # Download and extract
+    # Try to download pre-built package first
     DOWNLOAD_URL="https://github.com/${REPO}/releases/download/${VERSION}/openclaw-pairing-${VERSION}.tgz"
 
-    if curl -sL "$DOWNLOAD_URL" -o "plugin.tgz" 2>/dev/null; then
+    if curl -sL --fail "$DOWNLOAD_URL" -o "plugin.tgz" 2>/dev/null; then
+        echo "📦 Downloading pre-built package..."
         tar -xzf plugin.tgz
         cd package
 
@@ -65,10 +66,38 @@ else
 
         echo "✓ Plugin manually installed"
     else
-        echo "❌ Download failed"
-        echo "   Please manually install from: https://github.com/${REPO}"
-        rm -rf "$TEMP_DIR"
-        exit 1
+        echo "📦 No pre-built package found, installing from source..."
+
+        # Clone from git
+        if ! git clone --depth 1 --branch "${VERSION}" "https://github.com/${REPO}.git" package 2>/dev/null; then
+            # Fallback: clone main branch if tag doesn't exist
+            if ! git clone --depth 1 "https://github.com/${REPO}.git" package 2>/dev/null; then
+                echo "❌ Failed to clone repository"
+                echo "   Please manually install from: https://github.com/${REPO}"
+                rm -rf "$TEMP_DIR"
+                exit 1
+            fi
+        fi
+
+        cd package
+
+        # Install dependencies
+        if command -v npm &> /dev/null; then
+            npm install
+            npm link
+        elif command -v pnpm &> /dev/null; then
+            pnpm install
+            pnpm link
+        elif command -v yarn &> /dev/null; then
+            yarn install
+            yarn link
+        else
+            echo "❌ No package manager found (npm, pnpm, or yarn)"
+            rm -rf "$TEMP_DIR"
+            exit 1
+        fi
+
+        echo "✓ Plugin installed from source"
     fi
 
     # Cleanup
