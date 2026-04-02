@@ -1,0 +1,13 @@
+{
+  "id": "openclaw-pairing",
+  "name": "OpenClaw Pairing Plugin",
+  "version": "1.0.0",
+  "description": "Cross-platform device pairing plugin for OpenClaw (Android/HarmonyOS/iOS)",
+  "main": "dist/index.js",
+  "entry": "./dist/index.js",
+  "configSchema": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {}
+  }
+}

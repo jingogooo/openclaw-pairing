@@ -52,6 +52,9 @@
       "^(\\.{1,2}/.*)\\.js$": "$1"
     }
   },
+  "openclaw": {
+    "extensions": ["./dist/index.js"]
+  },
   "openclawPlugin": {
     "name": "device-pairing",
     "version": "1.0.0",
