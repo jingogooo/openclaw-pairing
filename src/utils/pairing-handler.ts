@@ -1,5 +1,6 @@
 import type { OpenClawPluginAPI } from 'openclaw';
 import crypto from 'crypto';
+import { registerDeviceAutoPairClaim } from '../api/device-claim.js';
 
 export type Platform = 'android' | 'harmony' | 'ios';
 
@@ -64,6 +65,42 @@ export function detectPlatformFromClaim(claim: string): Platform {
   }
 }
 
+import os from 'os';
+
+function getLanIp(): string {
+  // Try to get LAN IP for better connectivity
+  try {
+    const interfaces = os.networkInterfaces();
+    // Prefer 10.x.x.x addresses ( user's network )
+    for (const iface of Object.values(interfaces)) {
+      for (const addr of iface || []) {
+        if (addr.family === 'IPv4' && !addr.internal && addr.address.startsWith('10.')) {
+          return addr.address;
+        }
+      }
+    }
+    // Fallback to 192.168.x.x
+    for (const iface of Object.values(interfaces)) {
+      for (const addr of iface || []) {
+        if (addr.family === 'IPv4' && !addr.internal && addr.address.startsWith('192.168.')) {
+          return addr.address;
+        }
+      }
+    }
+    // Last resort: any non-internal IPv4
+    for (const iface of Object.values(interfaces)) {
+      for (const addr of iface || []) {
+        if (addr.family === 'IPv4' && !addr.internal) {
+          return addr.address;
+        }
+      }
+    }
+  } catch (e) {
+    // Fallback
+  }
+  return 'localhost';
+}
+
 export async function handlePairingCommand(options: PairingOptions): Promise<PairingResult> {
   const { platform, claim, api } = options;
 
@@ -78,72 +115,48 @@ export async function handlePairingCommand(options: PairingOptions): Promise<Pai
       };
     }
 
-    // Get gateway configuration from api.config
+    // Get gateway configuration
     const config = (api as any).config || {};
-    const gatewayPort = config.gateway?.port || 8080;
-    const gatewayHost = 'localhost'; // Could be enhanced to detect LAN IP
+    const gatewayPort = config.gateway?.port || 18789; // Default OpenClaw port
 
-    // For now, we simulate the pairing process
-    // In a real implementation, these methods would need to be available on the API
-    // @ts-ignore - These methods may exist at runtime
-    const issueToken = (api as any).issueDeviceBootstrapToken || (api as any).runtime?.issueDeviceBootstrapToken;
-    // @ts-ignore
-    const registerClaim = (api as any).registerDeviceAutoPairClaim || (api as any).runtime?.registerDeviceAutoPairClaim;
+    // Use LAN IP for better phone connectivity
+    const gatewayHost = getLanIp();
 
-    let operatorToken: { token: string };
-    let nodeToken: { token: string };
+    // Generate bootstrap tokens (using crypto as fallback)
+    // In production, these should be issued by the gateway
+    const operatorToken = crypto.randomBytes(32).toString('base64url');
+    const nodeToken = crypto.randomBytes(32).toString('base64url');
 
-    if (issueToken) {
-      operatorToken = await issueToken.call(api, {
-        profile: {
-          roles: ['operator'],
-          scopes: [
-            'operator.read',
-            'operator.write',
-            'operator.talk.secrets',
-            'operator.approvals'
-          ]
-        }
-      });
-
-      nodeToken = await issueToken.call(api, {
-        profile: {
-          roles: ['node'],
-          scopes: ['node.connect', 'node.read']
-        }
-      });
-    } else {
-      // Fallback: generate tokens locally
-      operatorToken = { token: crypto.randomBytes(32).toString('base64url') };
-      nodeToken = { token: crypto.randomBytes(32).toString('base64url') };
-    }
-
-    // Build setup code payload
+    // Build setup code payload - matching OpenClaw's expected format
     const setupCodePayload = {
+      v: 1,
       url: `http://${gatewayHost}:${gatewayPort}`,
-      nodeBootstrapToken: nodeToken.token,
-      operatorBootstrapToken: operatorToken.token,
+      nodeBootstrapToken: nodeToken,
+      operatorBootstrapToken: operatorToken,
       candidateUrls: [
         `http://${gatewayHost}:${gatewayPort}`,
-        `http://127.0.0.1:${gatewayPort}`
+        `http://127.0.0.1:${gatewayPort}`,
+        `http://localhost:${gatewayPort}`
       ]
     };
 
     const setupCode = Buffer.from(JSON.stringify(setupCodePayload), 'utf8').toString('base64url');
 
-    // Register device claim
+    // Register device claim in store
     const expiresAtMs = Date.now() + 5 * 60 * 1000; // 5 minutes
 
-    if (registerClaim) {
-      await registerClaim.call(api, {
-        claimToken: payload.claimToken,
-        deviceId: payload.deviceId,
-        publicKey: payload.publicKey,
-        setupCode,
-        gatewayUrl: setupCodePayload.url,
-        expiresAtMs
-      });
-    }
+    registerDeviceAutoPairClaim({
+      claimToken: payload.claimToken,
+      deviceId: payload.deviceId,
+      publicKey: payload.publicKey,
+      setupCode,
+      gatewayUrl: setupCodePayload.url,
+      expiresAtMs
+    });
+
+    console.log(`✓ Registered claim for device: ${payload.deviceId}`);
+    console.log(`✓ Setup code generated (expires in 5 minutes)`);
+    console.log(`✓ Gateway URL: ${setupCodePayload.url}`);
 
     return {
       success: true,
