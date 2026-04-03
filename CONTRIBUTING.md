@@ -6,7 +6,7 @@ Thank you for your interest in contributing!
 
 ```bash
 # Clone the repository
-git clone https://github.com/feiclaw/openclaw-pairing.git
+git clone https://github.com/jingogooo/openclaw-pairing.git
 cd openclaw-pairing
 
 # Install dependencies

@@ -141,7 +141,7 @@ More diagrams: [docs/pairing-flow.md](./docs/pairing-flow.md)
 
 ```bash
 # One-line install / 一键安装
-curl -fsSL https://github.com/feiclaw/openclaw-pairing/releases/latest/install.sh | sh
+curl -fsSL https://raw.githubusercontent.com/jingogooo/openclaw-pairing/main/install.sh | sh
 ```
 
 #### 2. Open Feiclaw App on Phone / 在手机上打开飞虾 App
@@ -176,19 +176,48 @@ App 会自动完成配对并显示成功信息。
 ### One-line Install (Recommended) / 一键安装（推荐）
 
 ```bash
-curl -fsSL https://github.com/feiclaw/openclaw-pairing/releases/latest/install.sh | sh
+curl -fsSL https://raw.githubusercontent.com/jingogooo/openclaw-pairing/main/install.sh | sh
 ```
 
 ### Via OpenClaw Plugins / 通过 OpenClaw 插件安装
 
 ```bash
-openclaw plugins install github:feiclaw/openclaw-pairing
+git clone https://github.com/jingogooo/openclaw-pairing.git
+cd openclaw-pairing
+npm install
+npm run build
+openclaw plugins install .
+openclaw plugins enable openclaw-pairing
+```
+
+### For Docker Gateway / Docker 网关安装
+
+If your OpenClaw gateway runs through Docker Compose, build the plugin on the
+host first, then install it through the CLI container:
+
+如果你的 OpenClaw 网关运行在 Docker Compose 中，先在宿主机构建插件，再通过
+CLI 容器安装：
+
+```bash
+git clone https://github.com/jingogooo/openclaw-pairing.git
+cd openclaw-pairing
+npm install
+npm run build
+
+cd /path/to/your/openclaw-docker
+docker compose run --rm \
+  -v "/path/to/openclaw-pairing:/plugin:ro" \
+  openclaw-cli \
+  plugins install /plugin
+docker compose run --rm openclaw-cli plugins enable openclaw-pairing
+docker compose restart openclaw-gateway
+docker compose run --rm openclaw-cli plugins inspect openclaw-pairing
 ```
 
 ### Manual Install / 手动安装
 
 ```bash
-git clone https://github.com/feiclaw/openclaw-pairing.git
+git clone https://github.com/jingogooo/openclaw-pairing.git
 cd openclaw-pairing
 npm install
 npm run build
@@ -246,10 +275,15 @@ openclaw pair-auto --claim "<base64-claim-payload>"
 
 ```bash
 # 安装插件
-openclaw plugins install github:feiclaw/openclaw-pairing
+git clone https://github.com/jingogooo/openclaw-pairing.git
+cd openclaw-pairing
+npm install
+npm run build
+openclaw plugins install .
+openclaw plugins enable openclaw-pairing
 
 # 或使用一键安装脚本
-curl -fsSL https://github.com/feiclaw/openclaw-pairing/releases/latest/install.sh | sh
+curl -fsSL https://raw.githubusercontent.com/jingogooo/openclaw-pairing/main/install.sh | sh
 ```
 
 ### Pairing timeout / 配对超时

@@ -6,7 +6,27 @@
 
 ```bash
 # One-line install
-curl -fsSL https://github.com/feiclaw/openclaw-pairing/releases/latest/install.sh | sh
+curl -fsSL https://raw.githubusercontent.com/jingogooo/openclaw-pairing/main/install.sh | sh
+```
+
+### Docker Gateway
+
+If your OpenClaw gateway runs in Docker Compose, install the plugin from a
+local checkout:
+
+```bash
+git clone https://github.com/jingogooo/openclaw-pairing.git
+cd openclaw-pairing
+npm install
+npm run build
+
+cd /path/to/your/openclaw-docker
+docker compose run --rm \
+  -v "/path/to/openclaw-pairing:/plugin:ro" \
+  openclaw-cli \
+  plugins install /plugin
+docker compose run --rm openclaw-cli plugins enable openclaw-pairing
+docker compose restart openclaw-gateway
 ```
 
 ### 2. Use Feiclaw App to Pair
@@ -27,7 +47,7 @@ Your phone is now paired with OpenClaw.
 ### Setup Development Environment
 
 ```bash
-git clone https://github.com/feiclaw/openclaw-pairing.git
+git clone https://github.com/jingogooo/openclaw-pairing.git
 cd openclaw-pairing
 npm install
 npm run build
@@ -100,5 +120,5 @@ exec $SHELL -l
 
 ## Getting Help
 
-- GitHub Issues: https://github.com/feiclaw/openclaw-pairing/issues
-- Discussions: https://github.com/feiclaw/openclaw-pairing/discussions
+- GitHub Issues: https://github.com/jingogooo/openclaw-pairing/issues
+- Discussions: https://github.com/jingogooo/openclaw-pairing/discussions
