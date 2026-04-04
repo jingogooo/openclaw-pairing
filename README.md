@@ -23,6 +23,43 @@
 
 ---
 
+## Copy To OpenClaw / 复制给 OpenClaw
+
+Copy the block below into OpenClaw or another coding agent if you want it to
+install this plugin for you.
+
+如果你想让 OpenClaw 或其他编码代理直接帮你安装这个插件，可以直接复制下面这段：
+
+```text
+Install the OpenClaw Pairing plugin from:
+https://github.com/jingogooo/openclaw-pairing
+
+If OpenClaw runs directly on the host:
+git clone https://github.com/jingogooo/openclaw-pairing.git
+cd openclaw-pairing
+npm install
+npm run build
+openclaw plugins install .
+openclaw plugins enable openclaw-pairing
+openclaw plugins inspect openclaw-pairing
+
+If OpenClaw runs in Docker Compose:
+git clone https://github.com/jingogooo/openclaw-pairing.git
+cd openclaw-pairing
+npm install
+npm run build
+cd /path/to/your/openclaw-docker
+docker compose run --rm -v "/path/to/openclaw-pairing:/plugin:ro" openclaw-cli plugins install /plugin
+docker compose run --rm openclaw-cli plugins enable openclaw-pairing
+docker compose restart openclaw-gateway
+docker compose run --rm openclaw-cli plugins inspect openclaw-pairing
+```
+
+Need a shorter deterministic guide for agents?
+See [LLM_INSTALL.md](./LLM_INSTALL.md).
+
+---
+
 ## Visual Guide / 图解教程
 
 ### Pairing Flow / 配对流程图
