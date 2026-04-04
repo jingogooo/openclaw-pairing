@@ -135,6 +135,9 @@ More diagrams: [docs/pairing-flow.md](./docs/pairing-flow.md)
 
 ## Quick Start / 快速开始
 
+For AI agents or automation workflows, use the short deterministic install
+guide: [LLM_INSTALL.md](./LLM_INSTALL.md)
+
 ### For End Users / 终端用户
 
 #### 1. Install Plugin on Computer / 在电脑安装插件
