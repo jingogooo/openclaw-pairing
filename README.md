@@ -25,6 +25,15 @@
 
 ## Copy To OpenClaw / 复制给 OpenClaw
 
+Need the shortest possible prompt for OpenClaw?
+
+如果你想把指令缩到最短，可以直接发这一句给 OpenClaw：
+
+```text
+Read and follow:
+https://github.com/jingogooo/openclaw-pairing/blob/main/OPENCLAW_INSTALL.md
+```
+
 Copy the block below into OpenClaw or another coding agent if you want it to
 install this plugin for you.
 
@@ -56,7 +65,7 @@ docker compose run --rm openclaw-cli plugins inspect openclaw-pairing
 ```
 
 Need a shorter deterministic guide for agents?
-See [LLM_INSTALL.md](./LLM_INSTALL.md).
+See [OPENCLAW_INSTALL.md](./OPENCLAW_INSTALL.md) or [LLM_INSTALL.md](./LLM_INSTALL.md).
 
 ---
 
